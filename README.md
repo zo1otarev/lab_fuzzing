@@ -11,17 +11,19 @@ mkdir /Fuzz
 cd /Fuzz
 ```
 
-~~3. Докер (Хотел запускать там, но потом передумал)~~
+##~~3. Докер (Хотел запускать там, но потом передумал)~~
 
-~~sudo apt-get update~~
-~~sudo apt-get install ca-certificates curl~~
-~~sudo install -m 0755 -d /etc/apt/keyrings~~
-~~curl -fsSL https://download.docker.com/linux/debian/gpg |~~
-~~  sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg~~
-~~echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable" | \~~
-~~  sudo tee /etc/apt/sources.list.d/docker.list~~
-~~sudo apt-get update~~
-~~sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin~~
+~~```
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg |
+  sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin~~
+```
 
 ## 3. AFL++
 ```
@@ -114,7 +116,6 @@ wget "https://s3.eu-central-2.wasabisys.com/malshare-samples/cf8/93b/c67/cf893bc
 ```
 ──(root㉿kali)-[/Fuzz]
 └─# afl-fuzz -i /Fuzz/in -o /Fuzz/out -t 50000+ -- clamscan @@
-```
 [+] Enabled environment variable AFL_IGNORE_PROBLEMS with value 1
 afl-fuzz++4.21c based on afl by Michal Zalewski and a large online community
 [+] AFL++ is maintained by Marc "van Hauser" Heuse, Dominik Maier, Andrea Fioraldi and Heiko "hexcoder" Eißfeldt
@@ -190,6 +191,7 @@ afl-fuzz++4.21c based on afl by Michal Zalewski and a large online community
 
 [*] -t option specified. We'll use an exec timeout of 41378 ms.
 [+] All set and ready to roll!
+```
 
 Ничего не получилось, за 2 часа ни одного нового пути
 
@@ -208,6 +210,7 @@ afl-fuzz -i /Fuzz/new_in -o /Fuzz/new_out -t 50000+ -- clamscan @@
 Поэтому продолжаем фазинг.
 На данный момент - exec speed : 0.03/sec (zzzz...) , что очень мало
 
+```
            american fuzzy lop ++4.21c {default} (clamscan) [explore]           
 ┌─ process timing ────────────────────────────────────┬─ overall results ────┐
 │        run time : 0 days, 1 hrs, 39 min, 3 sec      │  cycles done : 0     │
@@ -232,9 +235,11 @@ afl-fuzz -i /Fuzz/new_in -o /Fuzz/new_out -t 50000+ -- clamscan @@
 │py/custom/rq : unused, unused, unused, unused       ├───────────────────────┘
 │    trim/eff : n/a, n/a                             │          [cpu000:100%]
 └─ strategy: explore ────────── state: in progress ──┘
+```
 
 В итоге фаззил 12 часов 
 
+```
           american fuzzy lop ++4.21c {default} (clamscan) [explore]           
 ┌─ process timing ────────────────────────────────────┬─ overall results ────┐
 │        run time : 0 days, 12 hrs, 42 min, 36 sec    │  cycles done : 0     │
@@ -265,7 +270,7 @@ afl-fuzz -i /Fuzz/new_in -o /Fuzz/new_out -t 50000+ -- clamscan @@
 [!] Stopped during the first cycle, results may be incomplete.
     (For info on resuming, see docs/README.md)
 [+] We're done here. Have a nice day!
-
+```
 
 
 ## 10. Покрытие
@@ -297,11 +302,13 @@ genhtml -o cov_data /Fuzz/clamav-main/cov.info
 ```
 
 Итог:
+```
 Overall coverage rate:
   source files: 321
   lines.......: 11.5% (9706 of 84340 lines)
   functions...: 16.0% (472 of 2945 functions)
 Message summary:
   no messages were reported
+```
 
 Посмотреть данные можно в архиве cov_data.tar и файле cov.info

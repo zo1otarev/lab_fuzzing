@@ -1,33 +1,46 @@
-1. Поднял Kali
+# Лабораторная работа по предмету "Сертификация средств защиты информации"
 
-2. Оффтоп
+> Лабораторная работа выполнялась на Kali Linux
+
+## 1. Поднял Kali
+
+## 2. Оффтоп
+```
 sudo -i
 mkdir /Fuzz
 cd /Fuzz
+```
 
-#3. Докер (Хотел запускать там, но потом передумал)
-#sudo apt-get update
-#sudo apt-get install ca-certificates curl
-#sudo install -m 0755 -d /etc/apt/keyrings
-#curl -fsSL https://download.docker.com/linux/debian/gpg |
-#  sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-#echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable" | \
-#  sudo tee /etc/apt/sources.list.d/docker.list 
-#sudo apt-get update
-#sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+~~3. Докер (Хотел запускать там, но потом передумал)~~
 
-3. AFL++
+~~sudo apt-get update~~
+~~sudo apt-get install ca-certificates curl~~
+~~sudo install -m 0755 -d /etc/apt/keyrings~~
+~~curl -fsSL https://download.docker.com/linux/debian/gpg |~~
+~~  sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg~~
+~~echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable" | \~~
+~~  sudo tee /etc/apt/sources.list.d/docker.list~~
+~~sudo apt-get update~~
+~~sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin~~
+
+## 3. AFL++
+```
 apt-get install -y afl++
 git clone https://github.com/AFLplusplus/AFLplusplus.git
 cd AFLplusplus
 make
 cd ..
+```
 
-4. ClamAV source
+## 4. ClamAV source
+```
 git clone https://github.com/Cisco-Talos/clamav.git
+```
 
-5. Собирает ClamAV
+## 5. Собирает ClamAV
+```
 #Зависимости
+
 apt-get update && apt-get install -y \
   `# install tools` \
   gcc make pkg-config python3 python3-pip python3-pytest valgrind cmake \
@@ -37,6 +50,7 @@ apt-get update && apt-get install -y \
 apt-get install -y cargo rustc
 
 #Build
+
 cd clamav-main
 mkdir build && cd build
 cmake .. \
@@ -50,8 +64,10 @@ cmake .. \
 cmake --build .
 ctest
 cmake --build . --target install
+```
 
-6. Настраиваем и обновляем базу данных антивируса
+## 6. Настраиваем и обновляем базу данных антивируса
+```
 sed '8 s/Example//' /etc/clamav/freshclam.conf.sample > /etc/clamav/freshclam.conf 
 sed '8 s/Example//' /etc/clamav/clamd.conf.sample > /etc/clamav/clamd.conf 
 
@@ -76,8 +92,10 @@ wget https://clamav-mirror.ru/daily.cvd -P /var/lib/clamav/
 wget https://clamav-mirror.ru/bytecode.cvd -P /var/lib/clamav/
 
 freshclam
+```
 
-7. Создаем файлы 
+## 7. Создаем файлы 
+```
 cd /Fuzz
 mkdir in
 mkdir out
@@ -90,10 +108,13 @@ echo 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*' > /F
 echo 'Это тестовый файл' > /Fuzz/in/eicar.test
 echo 'sdfasfkjsdbhkjsdbhkjsdbvsdhkbvklsdbvlsdbv' > /Fuzz/in/sfsdlkfhsdfjhsl.sh
 wget "https://s3.eu-central-2.wasabisys.com/malshare-samples/cf8/93b/c67/cf893bc673af9f8778aa8d7d25b5538021ceb3e97fb8c94167fa6967b6706b5e?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=J7P96RTICJ6VW743HODY%2F20241121%2Feu-central-2%2Fs3%2Faws4_request&X-Amz-Date=20241121T175917Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Signature=1e697800e29f3bce11c4bd2fa714ea3035344c53e9148234e287ee3ea3604102" -O /Fuzz/in/virus 
+```
 
-8. Фаззинг
+## 8. Фаззинг
+```
 ──(root㉿kali)-[/Fuzz]
 └─# afl-fuzz -i /Fuzz/in -o /Fuzz/out -t 50000+ -- clamscan @@
+```
 [+] Enabled environment variable AFL_IGNORE_PROBLEMS with value 1
 afl-fuzz++4.21c based on afl by Michal Zalewski and a large online community
 [+] AFL++ is maintained by Marc "van Hauser" Heuse, Dominik Maier, Andrea Fioraldi and Heiko "hexcoder" Eißfeldt
@@ -170,16 +191,18 @@ afl-fuzz++4.21c based on afl by Michal Zalewski and a large online community
 [*] -t option specified. We'll use an exec timeout of 41378 ms.
 [+] All set and ready to roll!
 
-#Ничего не получилось, за 2 часа ни одного нового пути
+Ничего не получилось, за 2 часа ни одного нового пути
 
-#Переборщил, вспомнил, что нам нужно 2 входных корпуса
+Переборщил, вспомнил, что нам нужно 2 входных корпуса
 
-9. Фазим заново
+## 9. Фазим заново
+```
 mkdir /Fuzz/new_in 
 mkdir /Fuzz/new_out
 wget https://secure.eicar.org/eicar.com -P /Fuzz/new_in/
 echo 'Это тестовый файл' > /Fuzz/new_in/test.txt
 afl-fuzz -i /Fuzz/new_in -o /Fuzz/new_out -t 50000+ -- clamscan @@
+```
 
 К сожалению все еще очень долгое время выполнения, за 1,5 часа нашлось всего-лишь 15 корпусов. 
 Поэтому продолжаем фазинг.
@@ -245,7 +268,8 @@ afl-fuzz -i /Fuzz/new_in -o /Fuzz/new_out -t 50000+ -- clamscan @@
 
 
 
-10. Покрытие
+## 10. Покрытие
+```
 apt install lcov
 
 cd clamav-main
@@ -264,11 +288,13 @@ cmake --build .
 ctest
 cmake --build . --target install
 
+cd ..
 for file in /Fuzz/new_out/default/queue/*; do clamscan $file ; done
 find /Fuzz/clamav-main/ -name *.gcda
 lcov -o cov.info -c -d /Fuzz/clamav-main
 cat /Fuzz/clamav-main/cov.info
 genhtml -o cov_data /Fuzz/clamav-main/cov.info
+```
 
 Итог:
 Overall coverage rate:
@@ -277,3 +303,5 @@ Overall coverage rate:
   functions...: 16.0% (472 of 2945 functions)
 Message summary:
   no messages were reported
+
+Посмотреть данные можно в архиве cov_data.tar и файле cov.info

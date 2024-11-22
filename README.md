@@ -11,9 +11,9 @@ mkdir /Fuzz
 cd /Fuzz
 ```
 
-##~~3. Докер (Хотел запускать там, но потом передумал)~~
+## ~~3. Докер (Хотел запускать там, но потом передумал)~~
 
-~~```
+```
 sudo apt-get update
 sudo apt-get install ca-certificates curl
 sudo install -m 0755 -d /etc/apt/keyrings
@@ -22,7 +22,7 @@ curl -fsSL https://download.docker.com/linux/debian/gpg |
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list
 sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin~~
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
 ## 3. AFL++
